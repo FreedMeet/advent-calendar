@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Адвент Календар</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .masonry {
+      column-count: 3;
+      column-gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .masonry {
+        column-count: 2;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .masonry {
+        column-count: 1;
+      }
+    }
+
+    .card {
+      break-inside: avoid;
+      margin-bottom: 1rem;
+      transition: transform 0.2s ease-in-out;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+    }
+
+    .hidden-text {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-sans p-6">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-4xl font-bold text-center mb-8 text-pink-600">Адвент Календар Кохання</h1>
+    <div id="calendar" class="masonry"></div>
+  </div>
+
+  <script>
+    const activities = [
+  "Обмінятися 10 запитаннями «а що як…»",
+  "Розповісти одне одному одну особисту таємницю",
+  "Обмінятися голосовими про найзатишніший момент з дитинства",
+  "Скласти список з 10 речей, які хочете зробити разом при зустрічі",
+  "Пограти в «Правда чи дія» (тільки правда)",
+  "Написати одне одному невеликий лист і прочитати його вголос",
+  "Придумати одне одному прізвиська і пояснити, чому саме такі",
+  "Назвати 5 якостей, які ти особливо цінуєш у ній/ньому",
+  "Обмінятися фотографією свого дня «без фільтрів»",
+  "Створити «словничок пари» — вигадати 5 власних слів/фраз",
+  "Влаштувати битву мемів: хто надішле смішніший",
+  "Пройти тести типу «яка ти піца» і порівняти результати",
+  "Влаштувати вгадування: надіслати дитяче фото і дати 3 неправдиві факти",
+  "Грати в міста, фільми або пісні на час",
+  "Пограти в «вгадай пісню за 5 секунд»",
+  "Зіграти в 20 запитань: вона/він загадує щось, ти вгадуєш",
+  "Створити список із 5 місць, куди б поїхали разом — випадково по карті",
+  "Спробувати одну й ту ж гру на телефоні й поділитися прогресом",
+  "Придумати вигадану історію, де ви — головні герої",
+  "Спробувати спілкуватися один вечір тільки гіфками та емодзі",
+  "Написати одне одному міні-вірш",
+  "Намалювати (або згенерувати) портрет одне одного",
+  "Створити спільний плейлист у Spotify або YouTube",
+  "Написати разом оповідання — по одному реченню щодня",
+  "Зробити добірку улюблених цитат і обговорити їх",
+  "Намалювати щось, що символізує ваші почуття",
+  "Влаштувати міні-фото-челендж на тему дня",
+  "Записати голосове (або відео) побажання доброго ранку",
+  "Придумати спільну емблему, аватар або герб пари",
+  "Створити віртуальну «капсулу часу»",
+  "Назвати 5 причин, чому чекаєш цієї зустрічі",
+  "Уявити, як пройде ваш перший день разом",
+  "Згадати момент, коли вперше відчув/ла симпатію",
+  "Придумати «парні фрази», які будете говорити тільки одне одному",
+  "Поділитися романтичною піснею, яка асоціюється з нею/ним",
+  "Скласти список милих справ, які хочете зробити разом",
+  "Обговорити, чому вас навчили стосунки на відстані",
+  "Скласти список страхів/хвилювань перед зустріччю",
+  "Обмінятися короткими «маніфестами кохання»",
+  "Підбити підсумки 40 днів і вибрати, що будете продовжувати разом"
+];
+
+
+    // Создаём массив из индексов [0...39], затем мешаем его
+    const dayIndexes = [...Array(activities.length).keys()];
+    for (let i = dayIndexes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [dayIndexes[i], dayIndexes[j]] = [dayIndexes[j], dayIndexes[i]];
+    }
+
+    const container = document.getElementById('calendar');
+
+    const startDate = new Date('2025-05-09');
+    const today = new Date();
+const dayDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)); // 0 — день 1
+
+dayIndexes.forEach((dayIndex) => {
+  const card = document.createElement('div');
+  const dayId = `day-${dayIndex + 1}`;
+
+  const paddingClasses = ['p-4', 'p-6', 'p-8'];
+  const textSizeClasses = ['text-sm', 'text-base', 'text-lg'];
+  const bgColors = ['bg-white', 'bg-pink-50', 'bg-rose-50', 'bg-red-50', 'bg-orange-50'];
+
+  const randomPadding = paddingClasses[Math.floor(Math.random() * paddingClasses.length)];
+  const randomTextSize = textSizeClasses[Math.floor(Math.random() * textSizeClasses.length)];
+  const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)];
+
+  const isOpened = localStorage.getItem(dayId) === 'opened';
+  const isToday = dayIndex === dayDiff;
+
+  // Серый фильтр для карточек, которые ещё нельзя открывать
+  const opacityClass = isToday || isOpened ? '' : 'opacity-50 pointer-events-none';
+
+  card.className = `card ${randomBg} rounded-lg shadow-md ${randomPadding} ${randomTextSize} text-gray-800 ${opacityClass}`;
+  card.innerHTML = `
+    <div class="text-xl font-bold text-pink-500 mb-2">День ${dayIndex + 1}</div>
+    <div class="activity text-base ${isOpened ? '' : 'hidden-text'}">
+      ${activities[dayIndex]}
+    </div>
+  `;
+
+  if (isToday || isOpened) {
+    card.addEventListener('click', () => {
+      const activity = card.querySelector('.activity');
+      const isHidden = activity.classList.contains('hidden-text');
+      activity.classList.toggle('hidden-text');
+
+      if (isHidden) {
+        localStorage.setItem(dayId, 'opened');
+      } else {
+        localStorage.removeItem(dayId);
+      }
+    });
+  }
+
+  container.appendChild(card);
+});
+
+  </script>
+</body>
+
+</html>
