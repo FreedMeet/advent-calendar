@@ -117,21 +117,25 @@ dayIndexes.forEach((dayIndex) => {
   const randomTextSize = textSizeClasses[Math.floor(Math.random() * textSizeClasses.length)];
   const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)];
 
+  const dayNumber = dayIndex + 1;
   const isOpened = localStorage.getItem(dayId) === 'opened';
-  const isToday = dayIndex === dayDiff;
+  const isToday = dayNumber === dayDiff + 1;
+  const isPast = dayNumber < dayDiff + 1;
+  const isFuture = dayNumber > dayDiff + 1;
 
-  // Серый фильтр для карточек, которые ещё нельзя открывать
-  const opacityClass = isToday || isOpened ? '' : 'opacity-50 pointer-events-none';
+  const shouldReveal = isOpened || isPast;
+
+  const opacityClass = isToday || isPast || isOpened ? '' : 'opacity-50 pointer-events-none';
 
   card.className = `card ${randomBg} rounded-lg shadow-md ${randomPadding} ${randomTextSize} text-gray-800 ${opacityClass}`;
   card.innerHTML = `
-    <div class="text-xl font-bold text-pink-500 mb-2">День ${dayIndex + 1}</div>
-    <div class="activity text-base ${isOpened ? '' : 'hidden-text'}">
+    <div class="text-xl font-bold text-pink-500 mb-2">День ${dayNumber}</div>
+    <div class="activity text-base ${shouldReveal ? '' : 'hidden-text'}">
       ${activities[dayIndex]}
     </div>
   `;
 
-  if (isToday || isOpened) {
+  if (!isFuture) {
     card.addEventListener('click', () => {
       const activity = card.querySelector('.activity');
       const isHidden = activity.classList.contains('hidden-text');
